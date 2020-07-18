@@ -13,8 +13,13 @@ export default function Nav() {
 
       <div className="container mx-auto">
         <div className="flex">
-          <div className="inline-block border-b-4 border-gray-900 py-3 px-6">Deployments</div>
-          {/* <div className="inline-block border-gray-900 py-3 px-6">Whatever</div> */}
+          <Link href="/">
+            <a>
+              <div className="inline-block border-b-4 border-gray-900 py-3 px-6 mr-2">
+                Deployments
+              </div>
+            </a>
+          </Link>
         </div>
       </div>
     </nav>
