@@ -51,7 +51,7 @@ export class KraneAPI {
 
 interface GetDeploymentsResponse {
   code: number;
-  data: KraneProjectSpec[];
+  data: KraneDeployment[];
   success: boolean;
 }
 
@@ -90,9 +90,17 @@ interface ProjectSpecConfig {
   container_port?: string;
   host_post?: string;
   image: string;
+  labels?: { [key: string]: string };
+  env?: string[];
 }
 
 export interface KraneProjectSpec {
   name: string;
   config: ProjectSpecConfig;
+}
+
+export interface KraneDeployment {
+  alias: string;
+  spec: KraneProjectSpec;
+  containers: Container[];
 }
