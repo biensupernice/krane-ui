@@ -36,6 +36,13 @@ export class KraneAPI {
       .then((res) => res.data);
   }
 
+  async getDeployment(deploymentName: string) {
+    return this.client
+      .get<GetDeploymentResponse>(`/deployments/${deploymentName}`)
+      .then((res) => res.data)
+      .then((res) => res.data);
+  }
+
   async createDeployment(config: KraneProjectSpec) {
     return this.client
       .post<CreateDeploymentReponse>("/deployments", config)
@@ -52,6 +59,12 @@ export class KraneAPI {
 interface GetDeploymentsResponse {
   code: number;
   data: KraneDeployment[];
+  success: boolean;
+}
+
+interface GetDeploymentResponse {
+  code: number;
+  data: KraneDeployment;
   success: boolean;
 }
 
@@ -88,13 +101,16 @@ interface Session {
 interface ProjectSpecConfig {
   registry?: string;
   container_port?: string;
-  host_post?: string;
+  host_port?: string;
   image: string;
   labels?: { [key: string]: string };
-  env?: string[];
+  env?: { [key: string]: string };
+  tag?: string;
 }
 
 export interface KraneProjectSpec {
+  updated_at: string;
+  created_at: string;
   name: string;
   config: ProjectSpecConfig;
 }
