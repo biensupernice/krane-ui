@@ -1,6 +1,13 @@
 import moment from "moment";
 
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+})
+
 export function toReadableDateString(date: string) {
-  const pattern = "MMMM Do YYYY, h:mm:ss a"; // July 19th 2020, 6:48:08 pm
-  return moment(date, "YYYY-MM-DDTHH:mm:ss.SSS").format(pattern);
+  return dateFormatter.format(new Date(date));
 }
