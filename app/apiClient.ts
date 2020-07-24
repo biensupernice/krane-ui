@@ -103,9 +103,9 @@ interface ProjectSpecConfig {
   container_port?: string;
   host_port?: string;
   image: string;
-  labels?: { [key: string]: string };
-  env?: { [key: string]: string };
-  tag?: string;
+  env: { [key: string]: string };
+  tag: string;
+  volumes: { [key: string]: string };
 }
 
 export interface KraneProjectSpec {

@@ -6,7 +6,7 @@ import DeploymentNav from "../../components/DeploymentNav";
 import { ServerResponse } from "http";
 import { toReadableDateString } from "../../components/Date";
 
-const endpoint = "http://localhost:8080";
+const endpoint = "http://2405b873a005.ngrok.io";
 const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InNlc3Npb25faWQiOiI0YTg4MzUzZC03NDgxLTRkZjctYWM5NC00OTU2Nzc2ZWU1NzIifSwiZXhwIjoxNjIzMTkzMjA3LCJpc3MiOiJrcmFuZS1zZXJ2ZXIifQ.BqlAIepgKp6F4ZHlJyO7CbMD4YvcoFvWvAwNdNvRYxQ`;
 
 const apiClient = createClient(endpoint, token);
@@ -20,6 +20,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const data = await apiClient.getDeployment(name);
     return { props: { data } };
   } catch (e) {
+    console.log("Error: ", e);
     // If an error is found a redirect to / will happend occurs
     redirect(context.res, "/");
   }
