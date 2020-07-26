@@ -6,7 +6,7 @@ import DeploymentNav from "../../components/DeploymentNav";
 import { ServerResponse } from "http";
 import { toReadableDateString } from "../../components/Date";
 
-const endpoint = "http://2405b873a005.ngrok.io";
+const endpoint = "http://1cb999835e70.ngrok.io";
 const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InNlc3Npb25faWQiOiI0YTg4MzUzZC03NDgxLTRkZjctYWM5NC00OTU2Nzc2ZWU1NzIifSwiZXhwIjoxNjIzMTkzMjA3LCJpc3MiOiJrcmFuZS1zZXJ2ZXIifQ.BqlAIepgKp6F4ZHlJyO7CbMD4YvcoFvWvAwNdNvRYxQ`;
 
 const apiClient = createClient(endpoint, token);
@@ -15,6 +15,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const params = context?.params;
   const name = params?.name;
 
+  console.log("here");
   // WTF is this errrrorrrrrrr :(
   try {
     const data = await apiClient.getDeployment(name);
@@ -22,7 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } catch (e) {
     console.log("Error: ", e);
     // If an error is found a redirect to / will happend occurs
-    redirect(context.res, "/");
+    // redirect(context.res, "/");
   }
 };
 
@@ -32,6 +33,8 @@ type Props = {
 
 export default function Deployment(props: Props) {
   const data = props.data;
+
+  console.log("heree");
 
   // Currently krane treats 1 container as 1 deployment. Because of this we only use the container in the first position of the array however a list of containers is also possible if one day a `scale` feature was implemented allowing 1 deployment to have many containers attached. This is possible since the reverse proxy (traefik) handles multi-container routing using custom container labels.
   const container = data?.containers[0];
@@ -92,7 +95,9 @@ export default function Deployment(props: Props) {
 
             <div className="flex-1 text-right">
               <a
-                href={`${data?.alias}:${data.spec.config.host_port}`}
+                href={`${data?.alias == "" ? "http://localhost" : data.alias}:${
+                  data.spec.config.host_port
+                }`}
                 target="_blank"
               >
                 <button className="bg-notify-blue hover:shadow-lg text-lg shadow-lg text-white py-3 px-16 rounded-md">

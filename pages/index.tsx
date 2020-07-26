@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ExampleCard } from "../components/ExampleCard";
 import { toReadableDateString } from "../components/Date";
 
-const endpoint = "http://2405b873a005.ngrok.io";
+const endpoint = "http://1cb999835e70.ngrok.io";
 
 const apiClient = createClient(endpoint, "token");
 

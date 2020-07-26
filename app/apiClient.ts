@@ -54,6 +54,13 @@ export class KraneAPI {
       .post(`/deployments/${deploymentName}/run?tag=${tag}`)
       .then((res) => res.data);
   }
+
+  async getActivity() {
+    return this.client
+      .get<GetActivityResponse>("/activity")
+      .then((res) => res.data)
+      .then((res) => res.data);
+  }
 }
 
 interface GetDeploymentsResponse {
@@ -66,6 +73,43 @@ interface GetDeploymentResponse {
   code: number;
   data: KraneDeployment;
   success: boolean;
+}
+
+interface GetActivityResponse {
+  code: number;
+  data: Activity[];
+  success: boolean;
+}
+
+export interface Activity {
+  activity_id: string;
+  created_at: string;
+  job: Job;
+}
+
+interface Job {
+  id: string;
+  created_at: string;
+
+  // The body on a job can technically be anything it will
+  // be casted as a KraneDeployment for now because this
+  // is the only "type" of job we currently have.
+  body: KraneDeployment;
+
+  props: { [key: string]: string };
+
+  // Job Type is not really the type but the job name (update deployment).
+  // This will be nice to refactor to be JobType -> KraneDeployment, JobName -> UpdateDeployment
+  // Somewhre along the chain we can use the JobType to convert the body into a typed object. By includiong the
+  // schema of the body we can generate a typed body instead of Any
+  job_type: string;
+  metadata: JobMetadata;
+  success: boolean;
+  error: string;
+}
+
+interface JobMetadata {
+  worker_id: string;
 }
 
 interface LoginGetResponse {
