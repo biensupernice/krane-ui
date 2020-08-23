@@ -4,9 +4,10 @@ import Link from "next/link";
 import { ExampleCard } from "../components/ExampleCard";
 import { toReadableDateString } from "../components/Date";
 
-const endpoint = "http://1cb999835e70.ngrok.io";
+const endpoint = process.env.KRANE_HOST;
+const token = process.env.KRANE_TOKEN;
 
-const apiClient = createClient(endpoint, "token");
+const apiClient = createClient(endpoint, token);
 
 export async function getServerSideProps() {
   const data = await apiClient.getDeployments();

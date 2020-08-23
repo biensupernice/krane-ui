@@ -1,28 +1,36 @@
-import Nav from "../components/nav";
-import { createClient, Activity } from "../app/apiClient";
-import { toReadableDateString } from "../components/Date";
-import { useState } from "react";
+import Nav from "../../components/nav";
+import { Activity } from "../../app/apiClient";
+import axios from "axios";
+import useSWR from "swr";
+import { toReadableDateString } from "../../components/Date";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, NextRouter } from "next/router";
+import { GetServerSidePropsContext } from "next";
 
-const endpoint = process.env.KRANE_HOST;
-const token = process.env.KRANE_TOKEN;
+// export function getServerSideProps(context: GetServerSidePropsContext) {
+//   return { props: { query: context.query } };
+// }
 
-const apiClient = createClient(endpoint, token);
+type Props = { query: Query };
+type Query = { daysAgo: number };
 
-export async function getServerSideProps() {
-  const data = await apiClient.getActivity(1);
+export default function ActivityPage(props: Props) {
+  const [selectedActivity, setSelectedActivity] = useState<Activity>();
+  const [timeRange, setTimeRange] = useState<number>();
 
-  return { props: { data } };
-}
+  //   useEffect(() => {
+  //     if (props?.query?.daysAgo) {
+  //       setTimeRange(props?.query?.daysAgo);
+  //     }
+  //   }, [setTimeRange]);
 
-type Props = {
-  data: Activity[];
-};
+  const endpoint = `/api/activity?daysAgo=${timeRange}`;
+  const swrOptions = { refreshInterval: 60000 };
+  const { data, error } = useSWR(endpoint, axios.get, swrOptions);
 
-export default function ActivityPage({ data }: Props) {
-  const [selectedActivity, setActivity] = useState<Activity>();
+  const activities: Activity[] | undefined = []; //data?.data;
 
-  const revData = [...data].reverse();
   return (
     <div>
       <Nav />
@@ -32,29 +40,35 @@ export default function ActivityPage({ data }: Props) {
           <div className="w-32 text-center m-auto">
             <div className="font-medium text-sm text-gray-700">ERRORS</div>
             <div className="text-4xl text-base text-gray-900">
-              {data.filter((d) => !d.job.success).length}
+              {activities?.filter((d) => !d.job.success).length}
             </div>
           </div>
         </div>
-        {!data && <div>Loading...</div>}
-        {data && data.length == 0 && (
+
+        {error && "An error has occurred."}
+        {!data && "Loading activity..."}
+
+        {activities && activities.length == 0 && (
           <div className="text-sm text-gray-600 text-center">
             No activity found
           </div>
         )}
 
-        {/* Selected Date range*/}
         <div className="inline-block relative w-lg">
-          <select className="my-6 rounded focus:outline-none">
-            <option>Past Day</option>
-            <option>Past Week</option>
-            <option>Past Month</option>
+          <select
+            className="my-6 rounded focus:outline-none"
+            onChange={(e) => setTimeRange(parseInt(e.target.value))}
+            value={timeRange}
+          >
+            <option value={1}>Past Day</option>
+            <option value={7}>Past Week</option>
+            <option value={30}>Past Month</option>
           </select>
         </div>
 
-        {data && data.length > 0 && (
+        {activities && activities.length > 0 && (
           <div className="space-y-2">
-            {revData.map((activity) => (
+            {activities?.map((activity) => (
               <div key={activity.activity_id}>
                 <div
                   className="flex whitespace-no-wrap space-x-4 overflow-hidden" // whitespace-no-wrap
@@ -82,8 +96,8 @@ export default function ActivityPage({ data }: Props) {
                     className="text-gray-700 cursor-pointer"
                     onClick={() =>
                       selectedActivity?.activity_id == activity.activity_id
-                        ? setActivity(undefined)
-                        : setActivity(activity)
+                        ? setSelectedActivity(undefined)
+                        : setSelectedActivity(activity)
                     }
                   >
                     {activity.job.error ?? JSON.stringify(activity.job)}

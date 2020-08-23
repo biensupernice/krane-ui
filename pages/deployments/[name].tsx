@@ -1,21 +1,19 @@
 import { GetServerSideProps } from "next";
 
 import { createClient, KraneDeployment } from "../../app/apiClient";
-import Nav from "../../components/nav";
 import DeploymentNav from "../../components/DeploymentNav";
 import { ServerResponse } from "http";
 import { toReadableDateString } from "../../components/Date";
 
-const endpoint = "http://1cb999835e70.ngrok.io";
-const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InNlc3Npb25faWQiOiI0YTg4MzUzZC03NDgxLTRkZjctYWM5NC00OTU2Nzc2ZWU1NzIifSwiZXhwIjoxNjIzMTkzMjA3LCJpc3MiOiJrcmFuZS1zZXJ2ZXIifQ.BqlAIepgKp6F4ZHlJyO7CbMD4YvcoFvWvAwNdNvRYxQ`;
+const endpoint = process.env.KRANE_HOST;
+const token = process.env.KRANE_TOKEN;
 
 const apiClient = createClient(endpoint, token);
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const params = context?.params;
-  const name = params?.name;
+  const name = params?.name as string;
 
-  console.log("here");
   // WTF is this errrrorrrrrrr :(
   try {
     const data = await apiClient.getDeployment(name);
@@ -24,6 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log("Error: ", e);
     // If an error is found a redirect to / will happend occurs
     // redirect(context.res, "/");
+    return { props: { data: [] } };
   }
 };
 

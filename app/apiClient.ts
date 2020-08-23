@@ -1,6 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 
-export function createClient(endpoint: string, token?: string): KraneAPI {
+export function createClient(endpoint?: string, token?: string): KraneAPI {
+  if (!endpoint) {
+    throw new Error("Endpoint not provided");
+  }
   return new KraneAPI(endpoint, token);
 }
 
@@ -55,9 +58,9 @@ export class KraneAPI {
       .then((res) => res.data);
   }
 
-  async getActivity() {
+  async getActivity(daysAgo: number) {
     return this.client
-      .get<GetActivityResponse>("/activity")
+      .get<GetActivityResponse>(`/activity?daysAgo=${daysAgo}`)
       .then((res) => res.data)
       .then((res) => res.data);
   }
