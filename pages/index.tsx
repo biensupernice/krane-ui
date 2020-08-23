@@ -1,9 +1,11 @@
 import Nav from "../components/nav";
 import { createClient, KraneDeployment } from "../app/apiClient";
 import Link from "next/link";
+import { ExampleCard } from "../components/ExampleCard";
+import { toReadableDateString } from "../components/Date";
 
-const endpoint = "http://localhost:8080";
-const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InNlc3Npb25faWQiOiI0YTg4MzUzZC03NDgxLTRkZjctYWM5NC00OTU2Nzc2ZWU1NzIifSwiZXhwIjoxNjIzMTkzMjA3LCJpc3MiOiJrcmFuZS1zZXJ2ZXIifQ.BqlAIepgKp6F4ZHlJyO7CbMD4YvcoFvWvAwNdNvRYxQ`;
+const endpoint = process.env.KRANE_HOST;
+const token = process.env.KRANE_TOKEN;
 
 const apiClient = createClient(endpoint, token);
 
@@ -25,12 +27,17 @@ export default function IndexPage(props: Props) {
       <Nav />
       <div className="container mx-auto my-4">
         {!data && <div>Loading...</div>}
+        {data.length == 0 && (
+          <div className="py-6">
+            <ExampleCard />
+          </div>
+        )}
         {data && data.length > 0 && (
           <div className="flex flex-wrap">
             {data.map((deployment) => (
               <div
                 key={deployment.spec.name}
-                className="w-full lg:w-1/3 px-2 py-4 flex-shrink-0"
+                className="w-full lg:w-1/3 pr-8 py-4 flex-shrink-0"
               >
                 <Card deployment={deployment} />
               </div>
@@ -57,29 +64,37 @@ function Card(data: { deployment: KraneDeployment }) {
           </div>
 
           <div className="text-gray-700 text-sm">
-            Updated December 8, 2017 8:29 AM
+            {data.deployment.spec.updated_at
+              ? "Updated " +
+                toReadableDateString(data.deployment.spec.updated_at)
+              : "No updates found"}
           </div>
         </div>
 
         <div className="text-gray-800 text-sm">
-          {data.deployment.spec.config.image}
+          {data.deployment.spec.config?.image ?? "No image found"}
         </div>
       </div>
 
       <div className="p-4 font-medium text-sm text-gray-900">
-        {data.deployment.alias == "" ? (
-          <div className="flex justify-start items-center">
-            <div className="rounded-full h-3 w-3 bg-green-400 mr-2" />
-            <div className="font-sm text-gray-900">http://</div>
-          </div>
-        ) : (
-          <a
-            href={`http://biensupernice.com/${data.deployment.spec.name}`}
-            target="_blank"
-          >
-            {data.deployment.alias}
-          </a>
-        )}
+        <div className="flex justify-start items-center">
+          <div className="rounded-full h-3 w-3 bg-gray-400 mr-2" />
+          {data.deployment.alias == "" ? (
+            <a
+              href="http://github.com/biensupernice/krane-server/wiki/deployments"
+              className=" font-sm text-gray-900"
+            >
+              Setup an alias →
+            </a>
+          ) : (
+            <a
+              href={`${data.deployment.alias}:${data.deployment.spec.config.host_port}`}
+              target="_blank"
+            >
+              {data.deployment.alias}
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

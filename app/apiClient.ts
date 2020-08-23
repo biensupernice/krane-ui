@@ -1,6 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 
-export function createClient(endpoint: string, token?: string): KraneAPI {
+export function createClient(endpoint?: string, token?: string): KraneAPI {
+  if (!endpoint) {
+    throw new Error("Endpoint not provided");
+  }
   return new KraneAPI(endpoint, token);
 }
 
@@ -36,6 +39,13 @@ export class KraneAPI {
       .then((res) => res.data);
   }
 
+  async getDeployment(deploymentName: string) {
+    return this.client
+      .get<GetDeploymentResponse>(`/deployments/${deploymentName}`)
+      .then((res) => res.data)
+      .then((res) => res.data);
+  }
+
   async createDeployment(config: KraneProjectSpec) {
     return this.client
       .post<CreateDeploymentReponse>("/deployments", config)
@@ -47,12 +57,62 @@ export class KraneAPI {
       .post(`/deployments/${deploymentName}/run?tag=${tag}`)
       .then((res) => res.data);
   }
+
+  async getActivity(daysAgo: number) {
+    return this.client
+      .get<GetActivityResponse>(`/activity?daysAgo=${daysAgo}`)
+      .then((res) => res.data)
+      .then((res) => res.data);
+  }
 }
 
 interface GetDeploymentsResponse {
   code: number;
   data: KraneDeployment[];
   success: boolean;
+}
+
+interface GetDeploymentResponse {
+  code: number;
+  data: KraneDeployment;
+  success: boolean;
+}
+
+interface GetActivityResponse {
+  code: number;
+  data: Activity[];
+  success: boolean;
+}
+
+export interface Activity {
+  activity_id: string;
+  created_at: string;
+  job: Job;
+}
+
+interface Job {
+  id: string;
+  created_at: string;
+
+  // The body on a job can technically be anything it will
+  // be casted as a KraneDeployment for now because this
+  // is the only "type" of job we currently have.
+  body: KraneDeployment;
+
+  props: { [key: string]: string };
+
+  // Job Type is not really the type but the job name (update deployment).
+  // This will be nice to refactor to be JobType -> KraneDeployment, JobName -> UpdateDeployment
+  // Somewhre along the chain we can use the JobType to convert the body into a typed object. By includiong the
+  // schema of the body we can generate a typed body instead of Any
+  job_type: string;
+  metadata: JobMetadata;
+  success: boolean;
+  error: string;
+}
+
+interface JobMetadata {
+  worker_id: string;
 }
 
 interface LoginGetResponse {
@@ -88,13 +148,16 @@ interface Session {
 interface ProjectSpecConfig {
   registry?: string;
   container_port?: string;
-  host_post?: string;
+  host_port?: string;
   image: string;
-  labels?: { [key: string]: string };
-  env?: string[];
+  env: { [key: string]: string };
+  tag: string;
+  volumes: { [key: string]: string };
 }
 
 export interface KraneProjectSpec {
+  updated_at: string;
+  created_at: string;
   name: string;
   config: ProjectSpecConfig;
 }
