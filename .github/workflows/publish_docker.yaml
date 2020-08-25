@@ -31,6 +31,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: biensupernice/krane-ui
-          tags: latest, ${{ env.RELEASE_VERSION }}
+          tags: latest #, ${{ env.RELEASE_VERSION }}
         env: 
             RELEASE_VERSION: ${{ needs.version.outputs.release-version }}
