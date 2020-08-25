@@ -27,6 +27,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: biensupernice/krane-ui
           tags: latest, ${{ env.RELEASE_VERSION }}
-          build_args: VERSION=${{ env.RELEASE_VERSION }}
         env: 
             RELEASE_VERSION: ${{ needs.version.outputs.release-version }}
