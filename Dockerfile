@@ -1,21 +1,18 @@
-FROM mhart/alpine-node
+FROM node:alpine as build
 
-# set working directory
-WORKDIR /app
+COPY . .
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
+RUN npm install 
+RUN npm run build
 
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install
-RUN npm install react-scripts@3.4.1 -g
+FROM node:12-alpine
 
-# add app
-COPY . ./
+COPY --from=build package.json package.json
+COPY --from=build package-lock.json package-lock.json
+COPY --from=build .next .next
+
+RUN npm install --production
 
 EXPOSE 3000
 
-# start app
-CMD ["npm", "run", "dev"]
+CMD npm start

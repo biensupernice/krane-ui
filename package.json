@@ -7,18 +7,20 @@
     "start": "next start"
   },
   "dependencies": {
+    "@types/react-copy-to-clipboard": "^4.3.0",
     "axios": "^0.19.2",
     "next": "^9.4.4",
     "react": "^16.12.0",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.12.0",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^3.4.3",
     "swr": "^0.2.3"
   },
   "devDependencies": {
     "@types/node": "^14.0.13",
-    "@types/react": "^16.9.38",
+    "@types/react": "^16.9.46",
     "postcss-preset-env": "^6.7.0",
-    "tailwindcss": "^1.4.0",
-    "typescript": "^3.9.5"
+    "tailwindcss": "^1.6.0",
+    "typescript": "^3.9.7"
   }
 }

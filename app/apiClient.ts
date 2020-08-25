@@ -1,8 +1,15 @@
 import axios, { AxiosInstance } from "axios";
+import { Container } from "./container";
 
-export function createClient(endpoint?: string, token?: string): KraneAPI {
+export function createClient(endpoint: string = "", token?: string): KraneAPI {
   if (!endpoint) {
-    throw new Error("Endpoint not provided");
+    console.log("Endpoint not provided");
+    // throw new Error("Endpoint not provided");
+  }
+
+  if (!token) {
+    console.log("Token not provided");
+    // throw new Error("Endpoint not provided");
   }
   return new KraneAPI(endpoint, token);
 }

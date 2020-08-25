@@ -1,8 +1,8 @@
-interface Container {
+export interface Container {
   Id: string;
-  Name: string[];
+  Names: string[];
   Image: string;
-  ImageId: string;
+  ImageID: string;
   Command: string;
   Created: number;
   Ports: Port[];
