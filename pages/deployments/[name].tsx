@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 
+import CopyToClipboard from "react-copy-to-clipboard";
 import { createClient, KraneDeployment } from "../../app/apiClient";
 import DeploymentNav from "../../components/DeploymentNav";
 import { ServerResponse } from "http";
@@ -14,13 +15,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const params = context?.params;
   const name = params?.name as string;
 
-  // WTF is this errrrorrrrrrr :(
   try {
     const data = await apiClient.getDeployment(name);
     return { props: { data } };
   } catch (e) {
     console.log("Error: ", e);
-    // If an error is found a redirect to / will happend occurs
     // redirect(context.res, "/");
     return { props: { data: [] } };
   }
@@ -32,8 +31,6 @@ type Props = {
 
 export default function Deployment(props: Props) {
   const data = props.data;
-
-  console.log("heree");
 
   // Currently krane treats 1 container as 1 deployment. Because of this we only use the container in the first position of the array however a list of containers is also possible if one day a `scale` feature was implemented allowing 1 deployment to have many containers attached. This is possible since the reverse proxy (traefik) handles multi-container routing using custom container labels.
   const container = data?.containers[0];
@@ -114,8 +111,17 @@ export default function Deployment(props: Props) {
                 IMAGE
               </div>
 
-              <div className="font-normal text-gray-900">
-                {data.spec.config?.image ?? "No image found"}
+              <div className="font-normal text-gray-900 flex flex-col space-y-2">
+                <div>{data.spec.config?.image ?? "No image found"}</div>
+
+                <CopyToClipboard
+                  text={container?.ImageID}
+                  onCopy={() => alert(`Copied to clipboard`)}
+                >
+                  <div className="cursor-pointer font-mono text-gray-700 hover:text-notify-blue">
+                    {container?.ImageID.substring(0, 20) ?? "No image id"}
+                  </div>
+                </CopyToClipboard>
               </div>
             </div>
 

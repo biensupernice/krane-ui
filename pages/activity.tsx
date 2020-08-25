@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import Nav from "../components/nav";
 import { createClient, Activity } from "../app/apiClient";
 import { toReadableDateString } from "../components/Date";
-import { useState } from "react";
 import Link from "next/link";
+import useSWR from "swr";
+import axios from "axios";
 
 const endpoint = process.env.KRANE_HOST;
 const token = process.env.KRANE_TOKEN;
@@ -15,14 +17,30 @@ export async function getServerSideProps() {
   return { props: { data } };
 }
 
-type Props = {
-  data: Activity[];
-};
+type Props = { query: Query };
+type Query = { daysAgo: number };
 
-export default function ActivityPage({ data }: Props) {
+export default function ActivityPage(props: Props) {
   const [selectedActivity, setActivity] = useState<Activity>();
 
-  const revData = [...data].reverse();
+  const [timeRange, setTimeRange] = useState<number>(1);
+
+  useEffect(() => {
+    if (props?.query?.daysAgo) {
+      setTimeRange(props?.query?.daysAgo);
+    }
+  }, [timeRange]);
+
+  const endpoint = `/api/activity?daysAgo=${timeRange}`;
+  const swrOptions = { refreshInterval: 60000 };
+
+  const { data, error } = useSWR(endpoint, axios.get, swrOptions);
+
+  let revData = [];
+  if (data) {
+    revData = [...data?.data].reverse();
+  }
+
   return (
     <div>
       <Nav />
@@ -32,27 +50,37 @@ export default function ActivityPage({ data }: Props) {
           <div className="w-32 text-center m-auto">
             <div className="font-medium text-sm text-gray-700">ERRORS</div>
             <div className="text-4xl text-base text-gray-900">
-              {data.filter((d) => !d.job.success).length}
+              {revData.filter((d) => !d.job.success).length}
             </div>
           </div>
         </div>
-        {!data && <div>Loading...</div>}
-        {data && data.length == 0 && (
+        {error && (
+          <div className="text-center text-red-400">
+            An error has occurred when fetching your activity
+          </div>
+        )}
+
+        {!error && (
+          <div className="inline-block relative w-lg">
+            <select
+              className="my-6 rounded focus:outline-none"
+              onChange={(e) => setTimeRange(parseInt(e.target.value))}
+              value={timeRange}
+            >
+              <option value={1}>Past Day</option>
+              <option value={7}>Past Week</option>
+              <option value={30}>Past Month</option>
+            </select>
+          </div>
+        )}
+
+        {!error && revData && revData.length == 0 && (
           <div className="text-sm text-gray-600 text-center">
             No activity found
           </div>
         )}
 
-        {/* Selected Date range*/}
-        <div className="inline-block relative w-lg">
-          <select className="my-6 rounded focus:outline-none">
-            <option>Past Day</option>
-            <option>Past Week</option>
-            <option>Past Month</option>
-          </select>
-        </div>
-
-        {data && data.length > 0 && (
+        {!error && revData && revData.length > 0 && (
           <div className="space-y-2">
             {revData.map((activity) => (
               <div key={activity.activity_id}>
