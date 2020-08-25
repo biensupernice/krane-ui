@@ -6,7 +6,7 @@ on:
       - created
 
 jobs:
-  # Set release version
+  # Set the release version
   version:
       name: Set release version
       runs-on: ubuntu-latest
@@ -23,7 +23,10 @@ jobs:
         
   # Build docker image and publish to registry:
   publish-to-docker:
+    needs: [version]
+    name: Publish Docker image
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v1
       - uses: docker/build-push-action@v1
