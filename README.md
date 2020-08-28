@@ -1,10 +1,4 @@
-# Bootstraping the Docker image
-
-```
-# Build the image
-docker build -t krane-ui .
-# Tag the image
-docker tag krane-ui docker.io/biensupernice/krane-ui
-# Push to docker registry
-docker push docker.io/biensupernice/krane-ui
+# Installing
+```json
+docker run -d --name=krane-ui -p 3000:3000 -e KRANE_HOST="" -e KRANE_TOKEN="" biensupernice/krane-ui
 ```
