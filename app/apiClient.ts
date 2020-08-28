@@ -40,10 +40,15 @@ export class KraneAPI {
   }
 
   async getDeployments() {
+    console.log("Getting deployments");
     return this.client
       .get<GetDeploymentsResponse>("/deployments")
       .then((res) => res.data)
-      .then((res) => res.data);
+      .then((res) => res.data)
+      .catch((e) => {
+        console.error("Unable to get deployments: ", e);
+        throw e;
+      });
   }
 
   async getDeployment(deploymentName: string) {
