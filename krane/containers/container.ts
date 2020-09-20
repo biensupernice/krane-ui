@@ -1,4 +1,4 @@
-export interface Container {
+export type Container = {
   Id: string;
   Names: string[];
   Image: string;
@@ -12,7 +12,7 @@ export interface Container {
   HostConfig: HostConfig;
   NetworkSettings: object;
   Mounts: object[];
-}
+};
 
 interface Port {
   IP: string;

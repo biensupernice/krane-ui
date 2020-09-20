@@ -1,50 +1,44 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+type NavPath = {
+  href: string;
+  name: string;
+};
+
 export default function Nav() {
   const router = useRouter();
 
+  const paths: NavPath[] = [{ name: "Deployments", href: "/" }];
   return (
     <nav className="border-b shadow-sm space-y-2">
       <div className="container mx-auto py-6">
         <Link href="/">
-          <a className="text-2xl font-bold text-gray-900 no-underline">
-            /krane
+          <a className="text-xl tracking-widest font-extrabold text-gray-800 no-underline">
+            KRANE
           </a>
         </Link>
       </div>
 
-      <div className="container mx-auto">
+      {/* <div className="container mx-auto">
         <div className="flex">
-          <Link href="/">
-            <a>
-              {router.pathname == "/" ? (
-                <div className="inline-block border-b-4 border-gray-900 py-3 px-6 mr-2">
-                  Deployments
-                </div>
-              ) : (
-                <div className="inline-block border-gray-900 py-3 px-6 mr-2">
-                  Deployments
-                </div>
-              )}
-            </a>
-          </Link>
-
-          <Link href="/activity">
-            <a>
-              {router.pathname == "/activity" ? (
-                <div className="inline-block border-b-4 border-gray-900 py-3 px-6 mr-2">
-                  Activity
-                </div>
-              ) : (
-                <div className="inline-block border-gray-900 py-3 px-6 mr-2">
-                  Activity
-                </div>
-              )}
-            </a>
-          </Link>
+          {paths.map((path) => (
+            <Link href={path.href}>
+              <a>
+                {router.pathname == path.href ? (
+                  <div className="border-b-4 inline-block border-gray-900 py-3 px-6 mr-2  ">
+                    {path.name}
+                  </div>
+                ) : (
+                  <div className="inline-block border-gray-900 py-3 px-6 mr-2">
+                    {path.name}
+                  </div>
+                )}
+              </a>
+            </Link>
+          ))}
         </div>
-      </div>
+      </div> */}
     </nav>
   );
 }
